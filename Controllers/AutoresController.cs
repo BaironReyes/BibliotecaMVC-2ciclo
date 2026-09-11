@@ -6,12 +6,8 @@ namespace BibliotecaMVC.Controllers
 {
     public class AutoresController : Controller
     {
-        // Actividad 4: el controlador ya no crea la instancia directamente,
-        // sino que depende de la abstracción IAutorService (Inversión de Control).
         private readonly IAutorService _autorService;
 
-        // Inyección de Dependencias vía constructor: ASP.NET Core resuelve IAutorService
-        // usando lo registrado en Program.cs.
         public AutoresController(IAutorService autorService)
         {
             _autorService = autorService;
