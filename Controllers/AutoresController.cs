@@ -1,27 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
 using BibliotecaMVC.Services;
+using BibliotecaMVC.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaMVC.Controllers
 {
     public class AutoresController : Controller
     {
-        private readonly IAutorService _autorService;
+        private readonly BibliotecaContext _context;
 
-        public AutoresController(IAutorService autorService)
+        public AutoresController(BibliotecaContext context)
         {
-            _autorService = autorService;
+            _context = context;
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var autores = _autorService.ObtenerAutores();
+            var autores = await _context.Autores.ToListAsync();
             return View(autores);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var autor = _autorService.ObtenerAutorPorId(id);
+            var autor = await _context.Autores.FindAsync(id);
             if (autor == null)
             {
                 return NotFound("Autor no encontrado");
@@ -29,9 +30,9 @@ namespace BibliotecaMVC.Controllers
             return View(autor);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var autor = _autorService.ObtenerAutorPorId(id);
+            var autor = await _context.Autores.FindAsync(id);
             if (autor == null)
             {
                 return NotFound("Autor no encontrado");
@@ -41,18 +42,15 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Autor autor)
+        public async Task<IActionResult> Edit(Autor autor)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(autor);
             }
-
-            var actualizado = _autorService.ActualizarAutor(autor);
-            if (!actualizado)
-            {
-                return NotFound("Autor no encontrado");
-            }
+            _context.Autores.Update(autor);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -64,21 +62,22 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Autor autor)
+        public async Task<IActionResult> Create(Autor autor)
         {
             if (!ModelState.IsValid)
             {
                 return View(autor);
             }
 
-            _autorService.CrearAutor(autor);
+            _context.Autores.Add(autor);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var autor = _autorService.ObtenerAutorPorId(id);
+            var autor = await _context.Autores.FindAsync(id);
             if (autor == null)
             {
                 return NotFound("Autor no encontrado");
@@ -87,9 +86,14 @@ namespace BibliotecaMVC.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteDeVelda(int id)
+        public async Task<IActionResult> DeleteDeVelda(int id)
         {
-            _autorService.EliminarAutor(id);
+            var autor = await _context.Autores.FindAsync(id);
+            if (autor != null)
+            {
+                _context.Autores.Remove(autor);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
     }
