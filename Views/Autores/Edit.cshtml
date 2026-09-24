@@ -6,7 +6,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="swal-save-form">
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
@@ -30,6 +30,12 @@
         <label asp-for="FechaNacimiento" class="form-label"></label>
         <input asp-for="FechaNacimiento" type="date" class="form-control" />
         <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="Activo" class="form-check-input" />
+        <label asp-for="Activo" class="form-check-label"></label>
+        <span asp-validation-for="Activo" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-success">Guardar</button>

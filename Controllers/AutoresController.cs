@@ -42,14 +42,23 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Autor autor)
+        public async Task<IActionResult> Edit(int id, Autor autor)
         {
+            if (id != autor.Id)
+            {
+                return BadRequest("ID del autor no coincide");
+            }
 
             if (!ModelState.IsValid)
             {
                 return View(autor);
             }
-            _context.Autores.Update(autor);
+            var exists = await _context.Autores.AnyAsync(a => a.Id == id);
+            if (!exists)
+            {
+                return NotFound("Autor no encontrado");
+            }
+            _context.Update(autor);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
@@ -75,6 +84,8 @@ namespace BibliotecaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var autor = await _context.Autores.FindAsync(id);
@@ -82,18 +93,8 @@ namespace BibliotecaMVC.Controllers
             {
                 return NotFound("Autor no encontrado");
             }
-            return View(autor);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteDeVelda(int id)
-        {
-            var autor = await _context.Autores.FindAsync(id);
-            if (autor != null)
-            {
-                _context.Autores.Remove(autor);
-                await _context.SaveChangesAsync();
-            }
+            _context.Autores.Remove(autor);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }
