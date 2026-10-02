@@ -39,4 +39,22 @@ $(function(){
                 }
             });
     });
+
+    $(document).on('submit', 'form.swal-logout-form', function (e) {
+        e.preventDefault();
+        var form = this;
+        Swal.fire({
+            title: '¿Está seguro que quiere cerrar sesión?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Sí, cerrar sesión!',
+            cancelButtonText: 'Cancelar',
+        })
+            .then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+    });
 })
