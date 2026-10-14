@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using BibliotecaMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using BibliotecaMVC.Services;
 using BibliotecaMVC.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaMVC.Controllers
 {
+    [Authorize]
     public class AutoresController : Controller
     {
         private readonly BibliotecaContext _context;

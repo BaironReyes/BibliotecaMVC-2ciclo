@@ -15,12 +15,17 @@ builder.Services.AddDbContext<BibliotecaContext>(options =>
         builder.Configuration.GetConnectionString("BibliotecaDB"))
 );
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<BibliotecaContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Lockout.MaxFailedAccessAttempts = 5; // Número máximo de intentos fallidos antes de bloquear la cuenta
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15); // Tiempo de bloqueo
+    options.Lockout.AllowedForNewUsers = true; // Permitir bloqueo para nuevos usuarios
+}).AddEntityFrameworkStores<BibliotecaContext>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login"; // Ruta de inicio de sesión
-
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Ruta de acceso denegado
 });
 
 
@@ -31,6 +36,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IAutorService, AutorService>();
 
 var app = builder.Build();
+
+// Crear roles y promover al usuario admin al arrancar la aplicación
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.InicializarAsync(scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

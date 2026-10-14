@@ -34,7 +34,10 @@
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     <li class="nav-item">
-                        <span class="nav-link">@User.Identity.Name</span>
+                        <span class="nav-link">
+                            @User.Identity.Name
+                            <span class="badge bg-secondary">@(User.IsInRole("Admin") ? "Admin" : "Usuario")</span>
+                        </span>
                     </li>
                     <li class="nav-item">
                         <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline swal-logout-form">

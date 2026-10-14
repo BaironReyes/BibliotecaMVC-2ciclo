@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using BibliotecaMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BibliotecaMVC.Controllers
 {
@@ -16,6 +17,7 @@ namespace BibliotecaMVC.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login(string? returnUrl = null)
         {
             return View(new LoginViewModel
@@ -26,6 +28,7 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -42,7 +45,7 @@ namespace BibliotecaMVC.Controllers
                     user,
                     model.Password,
                     model.RememberMe,
-                    lockoutOnFailure: false
+                    lockoutOnFailure: true
                     );
 
                 if (result.Succeeded)
@@ -53,12 +56,19 @@ namespace BibliotecaMVC.Controllers
                     }
                     return RedirectToAction("Index", "Home");
                 }
+
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "La cuenta está bloqueada temporalmente. Inténtalo de nuevo más tarde.");
+                    return View(model);
+                }
             }
             ModelState.AddModelError(string.Empty, "Las credenciales introducidas no son válidas.");
             return View(model);
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View(new RegisterViewModel());
@@ -66,6 +76,7 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
@@ -83,6 +94,8 @@ namespace BibliotecaMVC.Controllers
 
             if (result.Succeeded)
             {
+                // Todo usuario nuevo recibe el rol "Usuario" (solo consulta)
+                await _userManager.AddToRoleAsync(user, "Usuario");
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
@@ -97,10 +110,18 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }
