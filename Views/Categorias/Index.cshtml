@@ -7,8 +7,10 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Listado de Categorias</h2>
 </div>
-<a class="btn btn-primary" asp-controller="Categorias" asp-action="Create">Agregar Categoria</a>
-
+@if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+{
+    <a class="btn btn-primary" asp-controller="Categorias" asp-action="Create">Agregar Categoria</a>
+}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -26,12 +28,17 @@
                 <td>@categoria.Nombre</td>
                 <td>@categoria.Descripcion</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@categoria.ID" class="btn btn-sm btn-warning">Editar</a>
-
-                    <form asp-action="Delete" asp-route-id="@categoria.ID" method="post" class="d-inline form-eliminar-categoria">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@categoria.ID" class="btn btn-sm btn-warning">Editar</a>
+                    }
+                    @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+                    {
+                        <form asp-action="Delete" asp-route-id="@categoria.ID" method="post" class="d-inline form-eliminar-categoria">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    }
                 </td>
             </tr>
         }

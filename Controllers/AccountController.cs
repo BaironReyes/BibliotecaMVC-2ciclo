@@ -94,16 +94,26 @@ namespace BibliotecaMVC.Controllers
 
             if (result.Succeeded)
             {
-                // Todo usuario nuevo recibe el rol "Usuario" (solo consulta)
-                await _userManager.AddToRoleAsync(user, "Usuario");
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+               var roleResult= await _userManager.AddToRoleAsync(user, "Usuario");
+                if (roleResult.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
+               
 
             return View(model);
         }

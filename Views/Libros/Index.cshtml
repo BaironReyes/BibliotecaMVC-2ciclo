@@ -8,8 +8,8 @@
 
 <p>Hay @Model.Count() libros registrados.</p>
 
-@if (User.IsInRole("Admin"))
-{
+@if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
+    {
     <a class="btn btn-primary mb-3" asp-action="Create">Nuevo libro +</a>
 }
 
@@ -45,7 +45,7 @@
                     </td>
                     <td>
                         <a asp-action="Details" asp-route-id="@libro.ID" class="btn btn-sm btn-outline-info">Ver</a>
-                        @if (User.IsInRole("Admin"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("Bibliotecario"))
                         {
                             <a asp-action="Edit" asp-route-id="@libro.ID" class="btn btn-sm btn-outline-secondary">Editar</a>
                             <a asp-action="Delete" asp-route-id="@libro.ID" class="btn btn-sm btn-outline-danger">Eliminar</a>

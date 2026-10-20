@@ -40,7 +40,21 @@ var app = builder.Build();
 // Crear roles y promover al usuario admin al arrancar la aplicación
 using (var scope = app.Services.CreateScope())
 {
-    await IdentitySeeder.InicializarAsync(scope.ServiceProvider);
+   var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+   var usuarios= await userManager.Users.ToListAsync();
+    foreach (var usuario in usuarios)
+    {
+        if ((await userManager.GetRolesAsync(usuario)).Count == 0)
+        { 
+            var result= await userManager.AddToRoleAsync(usuario, "Usuario");
+            if(!result.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"No se pudo asignar el rol al usuario {usuario.UserName}:{string.Join(", ", result.Errors.Select(e => e.Description))}"
+                    );
+            }
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
