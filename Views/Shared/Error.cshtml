@@ -1,25 +1,35 @@
 ﻿@model ErrorViewModel
+
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Algo salió mal";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-warning text-center">
+            <div class="card-body p-5">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning-subtle mb-4"
+                     style="width: 110px; height: 110px;">
+                    <span class="fs-1" aria-hidden="true"></span>
+                </div>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+                <h1 class="h2 mb-3">¡Ups! Algo salió mal</h1>
+                <p class="text-muted mb-4">
+                    Ocurrió un problema inesperado mientras procesábamos tu solicitud.
+                    El incidente quedó registrado. Puedes intentarlo de nuevo o seguir navegando por BibliotecaMVC.
+                </p>
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Volver al inicio</a>
+                    <a asp-controller="Libros" asp-action="Index" class="btn btn-outline-secondary">Ver libros</a>
+                    <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary">Ver categorías</a>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model?.RequestId))
+                {
+                    <p class="small text-muted mt-4 mb-0">Código de referencia: <code>@Model.RequestId</code></p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
